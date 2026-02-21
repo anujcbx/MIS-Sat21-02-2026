@@ -1,0 +1,1701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Regex Lab + AI Website Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #FFFFFF;
+  --surface: #F7F7F7;
+  --surface2: #F0F0F0;
+  --surface3: #E8E8E8;
+  --border: #E0E0E0;
+  --border2: #D0D0D0;
+  --red: #D72B2B;
+  --red2: #B71C1C;
+  --red-light: #FFEBEB;
+  --red-glow: rgba(215,43,43,0.12);
+  --red-dim: rgba(215,43,43,0.08);
+  --green: #1B7F4A;
+  --green-dim: rgba(27,127,74,0.1);
+  --yellow: #B45309;
+  --yellow-dim: rgba(180,83,9,0.1);
+  --blue: #1D4ED8;
+  --blue-dim: rgba(29,78,216,0.08);
+  --purple: #6D28D9;
+  --purple-dim: rgba(109,40,217,0.08);
+  --text: #1A1A1A;
+  --text2: #4A4A4A;
+  --text3: #888888;
+  --mono: 'Space Mono', monospace;
+  --sans: 'Outfit', sans-serif;
+  --shadow: 0 2px 12px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 24px rgba(0,0,0,0.10);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.app { display: flex; min-height: 100vh; }
+
+/* ──── SIDEBAR ──── */
+.sidebar {
+  width: 260px; flex-shrink: 0;
+  background: var(--red);
+  border-right: none;
+  position: fixed; height: 100vh;
+  display: flex; flex-direction: column;
+  z-index: 100; overflow-y: auto;
+  box-shadow: 3px 0 16px rgba(215,43,43,0.18);
+}
+
+.logo-area {
+  padding: 22px 22px 18px;
+  border-bottom: 1px solid rgba(255,255,255,0.18);
+}
+
+.logo-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: white; color: var(--red);
+  padding: 5px 12px; border-radius: 8px;
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  letter-spacing: 1px; margin-bottom: 10px;
+}
+
+.logo-title {
+  font-family: var(--sans); font-weight: 800; font-size: 17px;
+  color: #fff; line-height: 1.2;
+}
+
+.logo-sub { font-size: 12px; color: rgba(255,255,255,0.65); margin-top: 3px; }
+
+.nav-section { padding: 18px 14px 6px; }
+
+.nav-label {
+  font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+  color: rgba(255,255,255,0.45); font-weight: 600; padding: 0 6px; margin-bottom: 8px;
+}
+
+.nav-group { margin-bottom: 8px; }
+
+.nav-group-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px; border-radius: 8px;
+  font-size: 11px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; color: rgba(255,255,255,0.7);
+  background: rgba(255,255,255,0.1);
+  margin-bottom: 4px;
+}
+
+.nav-group-header .dot {
+  width: 7px; height: 7px; border-radius: 50%;
+}
+
+.nav-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 9px 10px 9px 18px; border-radius: 7px;
+  cursor: pointer; font-size: 13px; color: rgba(255,255,255,0.75);
+  transition: all 0.18s; border: 1px solid transparent;
+  margin-bottom: 2px;
+}
+
+.nav-item:hover { background: rgba(255,255,255,0.15); color: #fff; }
+
+.nav-item.active {
+  background: white; color: var(--red);
+  border-color: transparent;
+  font-weight: 700;
+}
+
+.nav-item .icon { font-size: 14px; }
+
+.nav-badge {
+  margin-left: auto; font-size: 10px; font-weight: 700;
+  background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.7);
+  padding: 2px 7px; border-radius: 10px;
+}
+
+.nav-item.active .nav-badge { background: var(--red-light); color: var(--red); }
+
+/* ──── MAIN ──── */
+.main { margin-left: 260px; flex: 1; background: var(--bg); }
+
+/* ──── TOP BAR ──── */
+.top-bar {
+  background: white; border-bottom: 2px solid var(--red);
+  padding: 0 48px; height: 56px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 50;
+  box-shadow: 0 2px 8px rgba(215,43,43,0.08);
+}
+
+.top-bar-breadcrumb {
+  font-size: 13px; color: var(--text3); display: flex; align-items: center; gap: 8px;
+}
+
+.top-bar-breadcrumb .sep { color: var(--red); }
+.top-bar-breadcrumb .current { color: var(--text); font-weight: 700; }
+
+.top-bar-actions { display: flex; gap: 10px; align-items: center; }
+
+.top-bar-btn {
+  padding: 7px 16px; border-radius: 7px;
+  font-size: 12px; font-weight: 700; cursor: pointer;
+  border: 2px solid var(--red); color: var(--red);
+  background: white; transition: all 0.2s;
+}
+
+.top-bar-btn:hover { background: var(--red); color: white; }
+.top-bar-btn.solid { background: var(--red); color: white; }
+.top-bar-btn.solid:hover { background: var(--red2); border-color: var(--red2); }
+
+/* ──── PAGE ──── */
+.page { display: none; padding: 40px 48px 60px; animation: fadeUp 0.3s ease; }
+.page.active { display: block; }
+
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(10px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+/* ──── PAGE HEADER ──── */
+.page-header { margin-bottom: 36px; }
+
+.eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  letter-spacing: 2px; color: var(--red); text-transform: uppercase;
+  margin-bottom: 10px;
+  background: var(--red-light); padding: 4px 12px; border-radius: 6px;
+  border-left: 3px solid var(--red);
+}
+
+.page-title {
+  font-weight: 900; font-size: 42px; line-height: 1.05;
+  letter-spacing: -1.5px; color: var(--text);
+}
+
+.page-title .accent { color: var(--red); }
+
+.page-desc { color: var(--text2); font-size: 16px; margin-top: 10px; max-width: 600px; line-height: 1.6; }
+
+/* ──── STATS BAR ──── */
+.stats-bar {
+  display: flex; gap: 0; margin-bottom: 36px;
+  background: white; border: 2px solid var(--red);
+  border-radius: 14px; overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.stat-item {
+  flex: 1; padding: 18px 20px; text-align: center;
+  border-right: 1px solid var(--border); position: relative;
+  transition: background 0.2s;
+}
+
+.stat-item:hover { background: var(--red-light); }
+.stat-item:last-child { border-right: none; }
+
+.stat-num { font-family: var(--mono); font-size: 26px; font-weight: 700; color: var(--red); }
+.stat-num.green { color: var(--green); }
+.stat-num.blue { color: var(--blue); }
+.stat-num.yellow { color: var(--yellow); }
+.stat-label { font-size: 11px; color: var(--text3); margin-top: 3px; letter-spacing: 0.5px; font-weight: 600; }
+
+/* ──── TABS ──── */
+.tab-bar {
+  display: flex; gap: 4px; margin-bottom: 28px;
+  background: var(--surface2); border: 1px solid var(--border);
+  padding: 5px; border-radius: 10px; width: fit-content;
+}
+
+.tab-btn {
+  padding: 9px 20px; border-radius: 7px; cursor: pointer;
+  font-size: 13px; font-weight: 600; color: var(--text2);
+  border: none; background: none; transition: all 0.2s;
+  display: flex; align-items: center; gap: 7px;
+}
+
+.tab-btn:hover { color: var(--text); background: white; }
+
+.tab-btn.active {
+  background: var(--red); color: white;
+  box-shadow: 0 2px 12px rgba(215,43,43,0.25);
+}
+
+.tab-content { display: none; }
+.tab-content.active { display: block; animation: fadeUp 0.25s ease; }
+
+/* ──── REGEX TESTER ──── */
+.regex-tester {
+  background: white;
+  border: 2px solid var(--border);
+  border-radius: 16px; overflow: hidden; margin-bottom: 28px;
+  box-shadow: var(--shadow);
+}
+
+.tester-header {
+  background: var(--red); border-bottom: none;
+  padding: 14px 20px; display: flex; align-items: center; gap: 12px;
+}
+
+.tester-dots { display: flex; gap: 6px; }
+.tester-dots span { width: 12px; height: 12px; border-radius: 50%; }
+.tester-dots .d1 { background: #FF5F57; }
+.tester-dots .d2 { background: #FEBC2E; }
+.tester-dots .d3 { background: #28C840; }
+
+.tester-title {
+  font-family: var(--mono); font-size: 12px; color: rgba(255,255,255,0.85);
+  flex: 1; text-align: center;
+}
+
+.tester-body { padding: 22px; display: flex; flex-direction: column; gap: 14px; background: white; }
+
+.input-row { display: flex; gap: 14px; }
+
+.input-group { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+
+.input-label {
+  font-family: var(--mono); font-size: 11px; color: var(--text3);
+  letter-spacing: 1px; text-transform: uppercase; font-weight: 700;
+}
+
+.regex-input {
+  background: var(--surface); border: 2px solid var(--border);
+  color: var(--green); font-family: var(--mono); font-size: 14px;
+  padding: 11px 15px; border-radius: 8px; outline: none;
+  transition: border-color 0.2s; width: 100%;
+}
+
+.regex-input:focus { border-color: var(--red); box-shadow: 0 0 0 3px var(--red-dim); }
+
+.regex-input.pattern { color: var(--yellow); }
+.regex-input.pattern:focus { border-color: var(--red); }
+
+.test-area {
+  background: var(--surface); border: 2px solid var(--border);
+  border-radius: 8px; padding: 14px 16px; min-height: 100px;
+  font-family: var(--mono); font-size: 14px; line-height: 1.7;
+  color: var(--text2);
+}
+
+.test-area .match {
+  background: rgba(27,127,74,0.15); color: var(--green);
+  border-radius: 3px; padding: 0 2px;
+  border-bottom: 2px solid var(--green);
+}
+
+.result-strip {
+  display: flex; gap: 12px; padding: 12px 16px;
+  background: var(--surface); border-radius: 8px;
+  border: 2px solid var(--border); align-items: center;
+  font-family: var(--mono); font-size: 13px; flex-wrap: wrap;
+}
+
+.result-badge {
+  padding: 4px 12px; border-radius: 6px; font-size: 11px; font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.result-badge.match { background: var(--green-dim); color: var(--green); border: 1px solid rgba(27,127,74,0.3); }
+.result-badge.no-match { background: var(--red-dim); color: var(--red); border: 1px solid rgba(215,43,43,0.3); }
+
+.result-count { color: var(--text2); font-size: 12px; }
+.result-count span { color: var(--green); font-weight: 700; }
+
+.run-btn {
+  padding: 10px 24px; background: var(--red);
+  color: white; border: none; border-radius: 8px;
+  font-family: var(--sans); font-size: 13px; font-weight: 700;
+  cursor: pointer; transition: all 0.2s; margin-left: auto;
+}
+
+.run-btn:hover { background: var(--red2); box-shadow: 0 4px 16px rgba(215,43,43,0.35); }
+
+/* ──── PROMPT CARDS ──── */
+.prompts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+.prompt-card {
+  background: white; border: 2px solid var(--border);
+  border-radius: 14px; overflow: hidden;
+  transition: all 0.22s; cursor: default;
+  box-shadow: var(--shadow);
+}
+
+.prompt-card:hover { border-color: var(--red); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+
+.prompt-card-header {
+  padding: 14px 18px 10px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+.prompt-type-badge {
+  font-family: var(--mono); font-size: 10px; font-weight: 700;
+  letter-spacing: 1.5px; padding: 4px 10px; border-radius: 5px;
+}
+
+.badge-regex { background: var(--yellow-dim); color: var(--yellow); border: 1px solid rgba(180,83,9,0.25); }
+.badge-sheets { background: var(--green-dim); color: var(--green); border: 1px solid rgba(27,127,74,0.25); }
+.badge-ai { background: var(--blue-dim); color: var(--blue); border: 1px solid rgba(29,78,216,0.2); }
+.badge-logic { background: var(--purple-dim); color: var(--purple); border: 1px solid rgba(109,40,217,0.2); }
+.badge-web { background: var(--red-dim); color: var(--red); border: 1px solid rgba(215,43,43,0.25); }
+
+.prompt-card-title {
+  font-weight: 700; font-size: 15px; padding: 0 18px 8px; color: var(--text);
+}
+
+.prompt-card-body {
+  margin: 0 18px; border-radius: 8px; padding: 12px 14px;
+  background: var(--surface); border: 1px solid var(--border);
+  font-family: var(--mono); font-size: 12px; color: var(--text2); line-height: 1.7;
+}
+
+.prompt-card-footer {
+  padding: 12px 18px;
+  display: flex; gap: 8px; align-items: center;
+}
+
+.btn-copy {
+  padding: 7px 14px; border-radius: 6px;
+  font-size: 12px; font-weight: 600; cursor: pointer;
+  border: 2px solid var(--border); background: white;
+  color: var(--text2); transition: all 0.2s;
+  display: flex; align-items: center; gap: 5px;
+}
+
+.btn-copy:hover { border-color: var(--red); color: var(--red); background: var(--red-light); }
+.btn-copy.copied { background: var(--green-dim); border-color: rgba(27,127,74,0.4); color: var(--green); }
+
+.btn-use {
+  padding: 7px 14px; border-radius: 6px;
+  font-size: 12px; font-weight: 700; cursor: pointer;
+  border: none; background: var(--red); color: white;
+  transition: all 0.2s; margin-left: auto;
+}
+
+.btn-use:hover { background: var(--red2); box-shadow: 0 2px 10px rgba(215,43,43,0.3); }
+
+/* ──── PATTERN TABLE ──── */
+.pattern-table {
+  width: 100%; border-collapse: collapse;
+  background: white; border-radius: 14px;
+  overflow: hidden; border: 2px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+.pattern-table th {
+  background: var(--red); padding: 13px 18px;
+  text-align: left; font-family: var(--mono); font-size: 11px;
+  letter-spacing: 1.5px; text-transform: uppercase; color: white;
+  border-bottom: none;
+}
+
+.pattern-table td {
+  padding: 13px 18px; border-bottom: 1px solid var(--border);
+  font-size: 13px; vertical-align: top;
+}
+
+.pattern-table tr:last-child td { border-bottom: none; }
+.pattern-table tr:hover td { background: var(--red-light); }
+
+.pattern-code {
+  font-family: var(--mono); font-size: 12px;
+  color: var(--red2); background: var(--red-light);
+  padding: 3px 8px; border-radius: 5px;
+  border: 1px solid rgba(215,43,43,0.2);
+  display: inline-block;
+}
+
+.pattern-desc { color: var(--text2); font-size: 13px; }
+.pattern-example { font-family: var(--mono); font-size: 11px; color: var(--text3); margin-top: 3px; }
+
+/* ──── CHALLENGE CARDS ──── */
+.challenges-list { display: flex; flex-direction: column; gap: 12px; }
+
+.challenge-card {
+  background: white; border: 2px solid var(--border);
+  border-radius: 14px; overflow: hidden; transition: all 0.2s;
+  box-shadow: var(--shadow);
+}
+
+.challenge-card:hover { border-color: var(--red); }
+
+.challenge-header {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 20px; cursor: pointer;
+}
+
+.challenge-num {
+  width: 38px; height: 38px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 14px; font-weight: 700;
+  flex-shrink: 0; background: var(--red); color: white;
+}
+
+.challenge-info { flex: 1; }
+.challenge-title { font-weight: 700; font-size: 15px; color: var(--text); }
+.challenge-meta { font-size: 12px; color: var(--text3); margin-top: 3px; }
+
+.difficulty {
+  padding: 3px 10px; border-radius: 100px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.5px;
+}
+
+.diff-easy { background: var(--green-dim); color: var(--green); border: 1px solid rgba(27,127,74,0.25); }
+.diff-medium { background: var(--yellow-dim); color: var(--yellow); border: 1px solid rgba(180,83,9,0.25); }
+.diff-hard { background: var(--red-dim); color: var(--red); border: 1px solid rgba(215,43,43,0.25); }
+
+.challenge-chevron { color: var(--red); transition: transform 0.2s; font-size: 16px; font-weight: 700; }
+.challenge-card.open .challenge-chevron { transform: rotate(180deg); }
+
+.challenge-body {
+  display: none; padding: 0 20px 20px;
+  border-top: 2px solid var(--red-light);
+}
+
+.challenge-card.open .challenge-body { display: block; padding-top: 16px; }
+
+.c-section { margin-bottom: 14px; }
+.c-label { font-family: var(--mono); font-size: 10px; color: var(--red); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 6px; font-weight: 700; }
+.c-data {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 12px 14px;
+  font-family: var(--mono); font-size: 12px; color: var(--text2); line-height: 1.7;
+}
+
+/* ──── AI STUDIO ──── */
+.studio-grid { display: grid; grid-template-columns: 280px 1fr; gap: 20px; }
+
+.studio-sidebar {
+  background: white; border: 2px solid var(--border);
+  border-radius: 16px; overflow: hidden; height: fit-content;
+  position: sticky; top: 76px; box-shadow: var(--shadow);
+}
+
+.studio-sidebar-header {
+  background: var(--red); padding: 14px 18px;
+  font-family: var(--mono); font-size: 12px; color: white;
+  display: flex; align-items: center; gap: 8px; font-weight: 700;
+}
+
+.studio-nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 18px; cursor: pointer; font-size: 14px;
+  color: var(--text2); border-left: 3px solid transparent;
+  transition: all 0.18s; border-bottom: 1px solid var(--border);
+}
+
+.studio-nav-item:last-child { border-bottom: none; }
+.studio-nav-item:hover { background: var(--red-light); color: var(--red); }
+.studio-nav-item.active { background: var(--red-light); color: var(--red); border-left-color: var(--red); font-weight: 700; }
+.studio-nav-item .sni { font-size: 16px; }
+
+.studio-main { display: flex; flex-direction: column; gap: 16px; }
+
+.prompt-detail-card {
+  background: white; border: 2px solid var(--border);
+  border-radius: 16px; overflow: hidden;
+  animation: fadeUp 0.25s ease; box-shadow: var(--shadow);
+}
+
+.pdc-header {
+  background: var(--surface); padding: 18px 22px;
+  border-bottom: 2px solid var(--border);
+  display: flex; align-items: flex-start; gap: 14px;
+}
+
+.pdc-icon {
+  width: 44px; height: 44px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0; background: var(--red-light);
+  border: 2px solid rgba(215,43,43,0.2);
+}
+
+.pdc-header-text { flex: 1; }
+.pdc-title { font-weight: 800; font-size: 18px; color: var(--text); }
+.pdc-sub { font-size: 13px; color: var(--text2); margin-top: 3px; }
+
+.pdc-body { padding: 22px; background: white; }
+
+.pdc-section { margin-bottom: 22px; }
+.pdc-section-title {
+  font-family: var(--mono); font-size: 11px; color: var(--red);
+  letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px;
+  display: flex; align-items: center; gap: 8px; font-weight: 700;
+}
+.pdc-section-title::after { content: ''; flex: 1; height: 2px; background: var(--red-light); }
+
+.prompt-textarea {
+  background: var(--surface); border: 2px solid var(--border);
+  border-radius: 10px; padding: 16px 18px;
+  font-family: var(--mono); font-size: 13px; color: var(--text);
+  line-height: 1.8; width: 100%; min-height: 140px;
+  resize: none; outline: none; transition: border-color 0.2s;
+}
+
+.prompt-textarea:focus { border-color: var(--red); box-shadow: 0 0 0 3px var(--red-dim); }
+
+.vars-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.var-input-group { display: flex; flex-direction: column; gap: 5px; }
+.var-label { font-size: 11px; font-family: var(--mono); color: var(--text3); letter-spacing: 1px; font-weight: 700; }
+.var-input {
+  background: var(--surface); border: 2px solid var(--border);
+  color: var(--blue); font-family: var(--mono); font-size: 13px;
+  padding: 9px 12px; border-radius: 7px; outline: none;
+  transition: border-color 0.2s;
+}
+.var-input:focus { border-color: var(--red); }
+
+.features-list { display: flex; flex-direction: column; gap: 8px; }
+.feature-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 8px;
+  font-size: 13px; color: var(--text2); transition: all 0.15s;
+}
+
+.feature-item:hover { background: var(--red-light); border-color: rgba(215,43,43,0.3); }
+
+.feature-check {
+  width: 20px; height: 20px; border-radius: 6px;
+  border: 2px solid var(--border2); cursor: pointer;
+  flex-shrink: 0; transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 900;
+}
+
+.feature-check.checked { background: var(--red); border-color: var(--red); color: white; }
+
+.feature-label { flex: 1; }
+
+.action-bar {
+  display: flex; gap: 10px; align-items: center;
+  padding-top: 18px; border-top: 2px solid var(--red-light);
+}
+
+.btn-generate {
+  padding: 12px 28px; background: var(--red);
+  color: white; border: none; border-radius: 9px;
+  font-size: 14px; font-weight: 700; cursor: pointer;
+  transition: all 0.2s; display: flex; align-items: center; gap: 8px;
+}
+
+.btn-generate:hover { background: var(--red2); box-shadow: 0 4px 16px rgba(215,43,43,0.35); transform: translateY(-1px); }
+
+.btn-reset {
+  padding: 12px 20px; background: white;
+  color: var(--text2); border: 2px solid var(--border);
+  border-radius: 9px; font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
+}
+
+.btn-reset:hover { border-color: var(--red); color: var(--red); background: var(--red-light); }
+
+/* ──── TEMPLATES ──── */
+.templates-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+.template-card {
+  background: white; border: 2px solid var(--border);
+  border-radius: 14px; overflow: hidden; cursor: pointer;
+  transition: all 0.22s; box-shadow: var(--shadow);
+}
+
+.template-card:hover { border-color: var(--red); transform: translateY(-3px); box-shadow: var(--shadow-md); }
+.template-card.selected { border-color: var(--red); box-shadow: 0 0 0 3px var(--red-dim); }
+
+.template-preview {
+  height: 120px; position: relative; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 36px; background: var(--red);
+}
+
+.template-info { padding: 14px 16px; }
+.template-name { font-weight: 800; font-size: 14px; color: var(--text); }
+.template-desc { font-size: 12px; color: var(--text3); margin-top: 3px; }
+
+.template-tags { display: flex; gap: 5px; margin-top: 10px; flex-wrap: wrap; }
+.template-tag {
+  font-size: 10px; padding: 2px 8px; border-radius: 4px;
+  background: var(--red-light); color: var(--red);
+  border: 1px solid rgba(215,43,43,0.2); font-weight: 600;
+}
+
+/* ──── SECTION TITLE ──── */
+.section-title {
+  font-family: var(--mono); font-size: 11px; letter-spacing: 2px;
+  color: var(--red); text-transform: uppercase; margin-bottom: 14px;
+  display: flex; align-items: center; gap: 10px; font-weight: 700;
+}
+
+.section-title::after { content: ''; flex: 1; height: 2px; background: var(--red-light); }
+
+/* ──── OUTPUT PREVIEW ──── */
+.output-preview {
+  background: white; border: 2px solid var(--border);
+  border-radius: 16px; overflow: hidden; box-shadow: var(--shadow);
+}
+
+.output-header {
+  background: var(--surface); padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+}
+
+.output-status { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 6px var(--green); }
+
+.output-title { font-family: var(--mono); font-size: 12px; color: var(--text2); flex: 1; }
+
+.output-body {
+  padding: 20px 22px;
+  font-family: var(--mono); font-size: 12px; color: var(--text2);
+  line-height: 1.8; min-height: 100px;
+}
+
+/* ──── TOAST ──── */
+.toast {
+  position: fixed; bottom: 28px; right: 28px;
+  background: var(--red); color: white;
+  padding: 13px 22px; border-radius: 10px; font-size: 13px; font-weight: 600;
+  transform: translateY(70px); opacity: 0; transition: all 0.3s;
+  z-index: 999; display: flex; align-items: center; gap: 8px;
+  box-shadow: 0 6px 24px rgba(215,43,43,0.4);
+}
+
+.toast.show { transform: translateY(0); opacity: 1; }
+
+/* ──── MODAL ──── */
+.modal {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+  z-index: 200; display: none; align-items: center; justify-content: center;
+  backdrop-filter: blur(4px);
+}
+
+.modal.open { display: flex; }
+
+.modal-box {
+  background: white; border: 2px solid var(--red);
+  border-radius: 20px; width: 700px; max-width: 95vw; max-height: 85vh;
+  overflow-y: auto; animation: fadeUp 0.3s ease;
+  box-shadow: 0 20px 60px rgba(215,43,43,0.2);
+}
+
+.modal-header {
+  padding: 20px 24px; border-bottom: 2px solid var(--red-light);
+  display: flex; align-items: center; gap: 14px; position: sticky; top: 0;
+  background: white; z-index: 1;
+}
+
+.modal-title { font-weight: 800; font-size: 20px; flex: 1; color: var(--text); }
+
+.modal-close {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: var(--surface); border: 2px solid var(--border);
+  color: var(--text2); cursor: pointer; font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+
+.modal-close:hover { background: var(--red); color: white; border-color: var(--red); }
+
+.modal-body { padding: 24px; }
+
+/* ──── SCROLLBAR ──── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--surface); }
+::-webkit-scrollbar-thumb { background: var(--red); border-radius: 10px; opacity: 0.5; }
+::-webkit-scrollbar-thumb:hover { background: var(--red2); }
+
+@media (max-width: 1100px) {
+  .studio-grid { grid-template-columns: 1fr; }
+  .prompts-grid { grid-template-columns: 1fr; }
+  .templates-grid { grid-template-columns: 1fr 1fr; }
+  .page { padding: 28px 24px 48px; }
+  .top-bar { padding: 0 24px; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="logo-area">
+    <div class="logo-badge">🧪 MIS SATURDAY</div>
+    <div class="logo-title">Regex + AI Studio</div>
+    <div class="logo-sub">Saturday Workshop Edition</div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-group">
+      <div class="nav-group-header">
+        <div class="dot" style="background:#fff"></div> REGEX LAB
+      </div>
+      <div class="nav-item active" onclick="navigate('regex-intro', this)">
+        <span class="icon">📖</span> Introduction <span class="nav-badge">START</span>
+      </div>
+      <div class="nav-item" onclick="navigate('regex-tester', this)">
+        <span class="icon">🧪</span> Live Tester <span class="nav-badge">TOOL</span>
+      </div>
+      <div class="nav-item" onclick="navigate('regex-patterns', this)">
+        <span class="icon">📚</span> Pattern Library <span class="nav-badge">28</span>
+      </div>
+      <div class="nav-item" onclick="navigate('regex-prompts', this)">
+        <span class="icon">✨</span> AI Prompts <span class="nav-badge">12</span>
+      </div>
+      <div class="nav-item" onclick="navigate('regex-challenges', this)">
+        <span class="icon">🏆</span> Challenges <span class="nav-badge">10</span>
+      </div>
+    </div>
+
+    <div class="nav-group" style="margin-top:14px">
+      <div class="nav-group-header">
+        <div class="dot" style="background:#fff"></div> AI WEBSITE STUDIO
+      </div>
+      <div class="nav-item" onclick="navigate('studio-overview', this)">
+        <span class="icon">🏠</span> Overview <span class="nav-badge">NEW</span>
+      </div>
+      <div class="nav-item" onclick="navigate('studio-builder', this)">
+        <span class="icon">⚡</span> Prompt Builder <span class="nav-badge">TOOL</span>
+      </div>
+      <div class="nav-item" onclick="navigate('studio-templates', this)">
+        <span class="icon">🎨</span> Templates <span class="nav-badge">8</span>
+      </div>
+      <div class="nav-item" onclick="navigate('studio-features', this)">
+        <span class="icon">🔧</span> Feature Prompts <span class="nav-badge">15</span>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <div class="top-bar-breadcrumb">
+    <span>MIS Lab</span>
+    <span class="sep">›</span>
+    <span class="current" id="breadcrumb-current">Introduction</span>
+  </div>
+  <div class="top-bar-actions">
+    <button class="top-bar-btn" onclick="navigate('regex-tester', document.querySelectorAll('.nav-item')[1])">🧪 Open Tester</button>
+    <button class="top-bar-btn solid" onclick="navigate('studio-builder', document.querySelectorAll('.nav-item')[6])">⚡ Build Prompt</button>
+  </div>
+</div>
+
+<!-- ═══ REGEX INTRO ═══ -->
+<div id="regex-intro" class="page active">
+  <div class="page-header">
+    <div class="eyebrow">REGEX LAB · MODULE 1</div>
+    <h1 class="page-title">Regular <span class="accent">Expressions</span></h1>
+    <p class="page-desc">Master pattern matching for data validation, cleaning, and extraction in MIS, Google Sheets, and business operations.</p>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat-item"><div class="stat-num">28</div><div class="stat-label">Patterns</div></div>
+    <div class="stat-item"><div class="stat-num green">12</div><div class="stat-label">AI Prompts</div></div>
+    <div class="stat-item"><div class="stat-num blue">10</div><div class="stat-label">Challenges</div></div>
+    <div class="stat-item"><div class="stat-num yellow">5</div><div class="stat-label">Use Cases</div></div>
+  </div>
+
+  <div class="section-title">What is Regex?</div>
+  <div class="prompts-grid" style="margin-bottom:28px">
+    <div class="prompt-card">
+      <div class="prompt-card-header"><span class="prompt-type-badge badge-regex">CONCEPT</span></div>
+      <div class="prompt-card-title">🔍 Pattern Matching Engine</div>
+      <div class="prompt-card-body">A <span style="color:var(--red);font-weight:700">Regular Expression</span> is a sequence of characters that defines a search pattern. Think of it as a smart "Find & Replace" that understands rules — not just exact text.<br><br>Example: <span style="color:var(--green)">/^\d{10}$/</span> matches any exact 10-digit mobile number.</div>
+      <div class="prompt-card-footer">
+        <button class="btn-copy" onclick="copyText(this,'A Regular Expression is a pattern that matches text. /^\\d{10}$/ matches 10-digit numbers.')">📋 Copy</button>
+        <button class="btn-use" onclick="navigate('regex-tester', document.querySelectorAll('.nav-item')[1])">Try in Tester →</button>
+      </div>
+    </div>
+    <div class="prompt-card">
+      <div class="prompt-card-header"><span class="prompt-type-badge badge-sheets">SHEETS USE</span></div>
+      <div class="prompt-card-title">📊 Why MIS Teams Need Regex</div>
+      <div class="prompt-card-body">• Validate 10,000 mobile numbers in 1 second<br>• Extract PAN / GST from bulk text<br>• Clean messy invoice numbers<br>• Validate email IDs in CRM exports<br>• Flag invalid vehicle numbers<br>• Format inconsistent dates<br><br>Google Sheets: <span style="color:var(--green);font-weight:700">REGEXMATCH, REGEXEXTRACT, REGEXREPLACE</span></div>
+      <div class="prompt-card-footer">
+        <button class="btn-copy" onclick="copyText(this,'Google Sheets Regex: REGEXMATCH, REGEXEXTRACT, REGEXREPLACE')">📋 Copy</button>
+        <button class="btn-use" onclick="navigate('regex-patterns', document.querySelectorAll('.nav-item')[2])">View Patterns →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">Core Regex Symbols</div>
+  <table class="pattern-table">
+    <thead><tr><th>Symbol</th><th>Meaning</th><th>Example</th><th>Matches</th></tr></thead>
+    <tbody>
+      <tr><td><span class="pattern-code">.</span></td><td class="pattern-desc">Any single character</td><td><span class="pattern-code">c.t</span></td><td>cat, cut, cot</td></tr>
+      <tr><td><span class="pattern-code">*</span></td><td class="pattern-desc">0 or more of previous</td><td><span class="pattern-code">ab*c</span></td><td>ac, abc, abbc</td></tr>
+      <tr><td><span class="pattern-code">+</span></td><td class="pattern-desc">1 or more of previous</td><td><span class="pattern-code">ab+c</span></td><td>abc, abbc (not ac)</td></tr>
+      <tr><td><span class="pattern-code">?</span></td><td class="pattern-desc">0 or 1 of previous</td><td><span class="pattern-code">colou?r</span></td><td>color, colour</td></tr>
+      <tr><td><span class="pattern-code">{n}</span></td><td class="pattern-desc">Exactly n times</td><td><span class="pattern-code">\d{10}</span></td><td>1234567890</td></tr>
+      <tr><td><span class="pattern-code">^</span></td><td class="pattern-desc">Start of string</td><td><span class="pattern-code">^Hello</span></td><td>Strings starting with Hello</td></tr>
+      <tr><td><span class="pattern-code">$</span></td><td class="pattern-desc">End of string</td><td><span class="pattern-code">world$</span></td><td>Strings ending with world</td></tr>
+      <tr><td><span class="pattern-code">\d</span></td><td class="pattern-desc">Any digit 0–9</td><td><span class="pattern-code">\d{3}</span></td><td>123, 456, 789</td></tr>
+      <tr><td><span class="pattern-code">\w</span></td><td class="pattern-desc">Word character [a-zA-Z0-9_]</td><td><span class="pattern-code">\w+</span></td><td>hello, World_1</td></tr>
+      <tr><td><span class="pattern-code">[...]</span></td><td class="pattern-desc">Character class</td><td><span class="pattern-code">[aeiou]</span></td><td>Any single vowel</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ═══ REGEX TESTER ═══ -->
+<div id="regex-tester" class="page">
+  <div class="page-header">
+    <div class="eyebrow">LIVE TOOL · REGEX LAB</div>
+    <h1 class="page-title">Regex <span class="accent">Tester</span></h1>
+    <p class="page-desc">Test your patterns in real time. Paste data, enter a pattern, and see matches instantly.</p>
+  </div>
+
+  <div class="regex-tester">
+    <div class="tester-header">
+      <div class="tester-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+      <div class="tester-title">regex-tester.js — Live Pattern Matcher</div>
+    </div>
+    <div class="tester-body">
+      <div class="input-row">
+        <div class="input-group">
+          <div class="input-label">// Pattern (Regex)</div>
+          <input class="regex-input pattern" id="regexPattern" placeholder="e.g. ^\d{10}$" value="^\d{10}$">
+        </div>
+        <div class="input-group" style="max-width:120px">
+          <div class="input-label">// Flags</div>
+          <input class="regex-input" id="regexFlags" placeholder="gim" value="g">
+        </div>
+      </div>
+      <div class="input-group">
+        <div class="input-label">// Test Data (one per line)</div>
+        <textarea class="regex-input" id="regexTestData" rows="7" style="resize:vertical;width:100%" placeholder="Paste your data here...">9876543210
++91 9876543210
+98765
+9876543210X
+8800112233
+hello123
+0000000000</textarea>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <button class="run-btn" onclick="runRegex()">▶ Run Test</button>
+        <button class="btn-reset" onclick="clearTester()">✕ Clear</button>
+        <div style="margin-left:auto;display:flex;gap:8px">
+          <button class="btn-copy" onclick="loadPreset('mobile')">📱 Mobile</button>
+          <button class="btn-copy" onclick="loadPreset('email')">✉️ Email</button>
+          <button class="btn-copy" onclick="loadPreset('pan')">🪪 PAN</button>
+          <button class="btn-copy" onclick="loadPreset('gst')">🏢 GST</button>
+        </div>
+      </div>
+      <div class="result-strip" id="regexResult">
+        <div style="color:var(--text3);font-size:12px">▶ Press "Run Test" to see results</div>
+      </div>
+      <div class="input-group">
+        <div class="input-label">// Output — Highlighted Matches</div>
+        <div class="test-area" id="regexOutput">Results will appear here...</div>
+      </div>
+      <div class="input-group">
+        <div class="input-label">// Google Sheets Formula</div>
+        <input class="regex-input" id="sheetsFormula" placeholder="Auto-generated Sheets formula" readonly style="color:var(--blue);cursor:pointer" onclick="copySheetFormula()">
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">Quick Cheatsheet</div>
+  <table class="pattern-table">
+    <thead><tr><th>Use Case</th><th>Pattern</th><th>Sheets Formula</th></tr></thead>
+    <tbody id="cheatsheet-table"></tbody>
+  </table>
+</div>
+
+<!-- ═══ PATTERN LIBRARY ═══ -->
+<div id="regex-patterns" class="page">
+  <div class="page-header">
+    <div class="eyebrow">REFERENCE · 28 PATTERNS</div>
+    <h1 class="page-title">Pattern <span class="accent">Library</span></h1>
+    <p class="page-desc">Ready-to-use regex patterns for Indian business data validation.</p>
+  </div>
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab(this,'pat-validation')">✅ Validation</button>
+    <button class="tab-btn" onclick="switchTab(this,'pat-extraction')">🔍 Extraction</button>
+    <button class="tab-btn" onclick="switchTab(this,'pat-sheets')">📊 Sheets Formulas</button>
+  </div>
+  <div id="pat-validation" class="tab-content active">
+    <table class="pattern-table"><thead><tr><th>Field</th><th>Pattern</th><th>Description</th><th>Action</th></tr></thead><tbody id="validation-patterns"></tbody></table>
+  </div>
+  <div id="pat-extraction" class="tab-content">
+    <table class="pattern-table"><thead><tr><th>Extract What</th><th>Pattern</th><th>Example → Output</th><th>Action</th></tr></thead><tbody id="extraction-patterns"></tbody></table>
+  </div>
+  <div id="pat-sheets" class="tab-content">
+    <table class="pattern-table"><thead><tr><th>Task</th><th>Google Sheets Formula</th><th>Result</th><th>Action</th></tr></thead><tbody id="sheets-patterns"></tbody></table>
+  </div>
+</div>
+
+<!-- ═══ AI PROMPTS ═══ -->
+<div id="regex-prompts" class="page">
+  <div class="page-header">
+    <div class="eyebrow">AI PROMPTS · 12 TEMPLATES</div>
+    <h1 class="page-title">Regex <span class="accent">AI Prompts</span></h1>
+    <p class="page-desc">Use these with Claude or ChatGPT to generate, explain, or debug regex patterns instantly.</p>
+  </div>
+  <div class="prompts-grid" id="regex-prompts-grid"></div>
+</div>
+
+<!-- ═══ CHALLENGES ═══ -->
+<div id="regex-challenges" class="page">
+  <div class="page-header">
+    <div class="eyebrow">EXERCISES · 10 CHALLENGES</div>
+    <h1 class="page-title">Business <span class="accent">Challenges</span></h1>
+    <p class="page-desc">10 real-world regex challenges using MIS data. Click to expand each challenge.</p>
+  </div>
+  <div class="challenges-list" id="challenges-list"></div>
+</div>
+
+<!-- ═══ STUDIO OVERVIEW ═══ -->
+<div id="studio-overview" class="page">
+  <div class="page-header">
+    <div class="eyebrow">AI WEBSITE STUDIO</div>
+    <h1 class="page-title">Build Websites <span class="accent">with AI</span></h1>
+    <p class="page-desc">Complete prompt system to generate, redesign, and enhance websites using AI — no coding required.</p>
+  </div>
+  <div class="stats-bar">
+    <div class="stat-item"><div class="stat-num blue">8</div><div class="stat-label">Templates</div></div>
+    <div class="stat-item"><div class="stat-num green">15</div><div class="stat-label">Feature Prompts</div></div>
+    <div class="stat-item"><div class="stat-num">6</div><div class="stat-label">Prompt Types</div></div>
+    <div class="stat-item"><div class="stat-num yellow">∞</div><div class="stat-label">Possibilities</div></div>
+  </div>
+  <div class="section-title">Studio Modules</div>
+  <div class="prompts-grid">
+    <div class="prompt-card" onclick="navigate('studio-builder', document.querySelectorAll('.nav-item')[6])">
+      <div class="prompt-card-header"><span class="prompt-type-badge badge-web">TOOL</span></div>
+      <div class="prompt-card-title">⚡ Prompt Builder</div>
+      <div class="prompt-card-body" style="padding:12px 18px">Fill in your company details and instantly generate a complete, customized website prompt ready to paste into any AI tool. Choose from 6 prompt types.</div>
+      <div class="prompt-card-footer"><button class="btn-use" onclick="navigate('studio-builder', document.querySelectorAll('.nav-item')[6])">Open Builder →</button></div>
+    </div>
+    <div class="prompt-card" onclick="navigate('studio-templates', document.querySelectorAll('.nav-item')[7])">
+      <div class="prompt-card-header"><span class="prompt-type-badge badge-ai">TEMPLATES</span></div>
+      <div class="prompt-card-title">🎨 Website Templates</div>
+      <div class="prompt-card-body" style="padding:12px 18px">8 pre-designed prompt templates for: Retail, Clinic, Logistics, Manufacturing, Restaurant, Real Estate, Consulting, Education. Each with full section breakdown.</div>
+      <div class="prompt-card-footer"><button class="btn-use" onclick="navigate('studio-templates', document.querySelectorAll('.nav-item')[7])">View Templates →</button></div>
+    </div>
+    <div class="prompt-card" onclick="navigate('studio-features', document.querySelectorAll('.nav-item')[8])">
+      <div class="prompt-card-header"><span class="prompt-type-badge badge-logic">FEATURES</span></div>
+      <div class="prompt-card-title">🔧 Feature Prompts</div>
+      <div class="prompt-card-body" style="padding:12px 18px">15 individual prompts to add specific features: WhatsApp button, contact form, chatbot, testimonials, pricing table, FAQ, gallery, booking form, and more.</div>
+      <div class="prompt-card-footer"><button class="btn-use" onclick="navigate('studio-features', document.querySelectorAll('.nav-item')[8])">Browse Features →</button></div>
+    </div>
+    <div class="prompt-card">
+      <div class="prompt-card-header"><span class="prompt-type-badge badge-sheets">WORKFLOW</span></div>
+      <div class="prompt-card-title">🚀 5-Step Website Creation</div>
+      <div class="prompt-card-body" style="padding:12px 18px"><b>Step 1:</b> Choose template → <b>Step 2:</b> Open Prompt Builder → <b>Step 3:</b> Fill placeholders → <b>Step 4:</b> Paste into Claude/ChatGPT → <b>Step 5:</b> Add feature prompts<br><br>Average time to first website: <span style="color:var(--green);font-weight:700">8 minutes</span></div>
+      <div class="prompt-card-footer"><button class="btn-use" onclick="navigate('studio-builder', document.querySelectorAll('.nav-item')[6])">Start Building →</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ STUDIO BUILDER ═══ -->
+<div id="studio-builder" class="page">
+  <div class="page-header">
+    <div class="eyebrow">PROMPT BUILDER · AI STUDIO</div>
+    <h1 class="page-title">Website <span class="accent">Generator</span></h1>
+    <p class="page-desc">Fill in your details, select sections, and get a ready-to-use AI prompt.</p>
+  </div>
+  <div class="studio-grid">
+    <div>
+      <div class="studio-sidebar">
+        <div class="studio-sidebar-header">📁 Prompt Type</div>
+        <div class="studio-nav-item active" onclick="switchStudioType(this,'full-website')"><span class="sni">🌐</span> Full Website</div>
+        <div class="studio-nav-item" onclick="switchStudioType(this,'landing-page')"><span class="sni">🎯</span> Landing Page</div>
+        <div class="studio-nav-item" onclick="switchStudioType(this,'redesign')"><span class="sni">🔄</span> Redesign</div>
+        <div class="studio-nav-item" onclick="switchStudioType(this,'chatbot')"><span class="sni">💬</span> AI Chatbot</div>
+        <div class="studio-nav-item" onclick="switchStudioType(this,'ecommerce')"><span class="sni">🛒</span> E-Commerce</div>
+        <div class="studio-nav-item" onclick="switchStudioType(this,'portfolio')"><span class="sni">📁</span> Portfolio</div>
+      </div>
+    </div>
+    <div class="studio-main">
+      <div class="prompt-detail-card">
+        <div class="pdc-header">
+          <div class="pdc-icon" id="builder-icon">🌐</div>
+          <div class="pdc-header-text">
+            <div class="pdc-title" id="builder-title">Full Website Generator</div>
+            <div class="pdc-sub" id="builder-sub">Complete multi-section website with all standard pages.</div>
+          </div>
+          <span class="prompt-type-badge badge-web" id="builder-badge">FULL SITE</span>
+        </div>
+        <div class="pdc-body">
+          <div class="pdc-section">
+            <div class="pdc-section-title">Company Details</div>
+            <div class="vars-grid">
+              <div class="var-input-group">
+                <div class="var-label">COMPANY NAME</div>
+                <input class="var-input" id="v-company" placeholder="e.g. Sharma Electronics" oninput="buildPrompt()">
+              </div>
+              <div class="var-input-group">
+                <div class="var-label">INDUSTRY</div>
+                <input class="var-input" id="v-industry" placeholder="e.g. Electronics Retail" oninput="buildPrompt()">
+              </div>
+              <div class="var-input-group">
+                <div class="var-label">THEME COLOR</div>
+                <input class="var-input" id="v-color" placeholder="e.g. Red & White" oninput="buildPrompt()">
+              </div>
+              <div class="var-input-group">
+                <div class="var-label">TARGET AUDIENCE</div>
+                <input class="var-input" id="v-audience" placeholder="e.g. Urban families 25-45" oninput="buildPrompt()">
+              </div>
+              <div class="var-input-group" style="grid-column:1/-1">
+                <div class="var-label">REFERENCE WEBSITE (optional)</div>
+                <input class="var-input" id="v-ref" placeholder="e.g. https://example.com" style="color:var(--text2)" oninput="buildPrompt()">
+              </div>
+              <div class="var-input-group" style="grid-column:1/-1">
+                <div class="var-label">UNIQUE SELLING POINT</div>
+                <input class="var-input" id="v-usp" placeholder="e.g. 20 years experience, EMI available" oninput="buildPrompt()">
+              </div>
+            </div>
+          </div>
+          <div class="pdc-section">
+            <div class="pdc-section-title">Include Sections</div>
+            <div class="features-list" id="features-checklist"></div>
+          </div>
+          <div class="pdc-section">
+            <div class="pdc-section-title">Generated Prompt</div>
+            <textarea class="prompt-textarea" id="generated-prompt" rows="10" readonly placeholder="Fill in details above to generate your prompt..."></textarea>
+          </div>
+          <div class="action-bar">
+            <button class="btn-generate" onclick="copyGeneratedPrompt()">📋 Copy Full Prompt</button>
+            <button class="btn-reset" onclick="resetBuilder()">↺ Reset</button>
+            <div style="margin-left:auto;font-size:12px;color:var(--text3)" id="char-count"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ STUDIO TEMPLATES ═══ -->
+<div id="studio-templates" class="page">
+  <div class="page-header">
+    <div class="eyebrow">INDUSTRY TEMPLATES · 8 TYPES</div>
+    <h1 class="page-title">Website <span class="accent">Templates</span></h1>
+    <p class="page-desc">Click any template to view the full prompt — ready to copy and use with any AI tool.</p>
+  </div>
+  <div class="templates-grid" id="templates-grid"></div>
+</div>
+
+<!-- ═══ STUDIO FEATURES ═══ -->
+<div id="studio-features" class="page">
+  <div class="page-header">
+    <div class="eyebrow">FEATURE PROMPTS · 15 TOOLS</div>
+    <h1 class="page-title">Website <span class="accent">Features</span></h1>
+    <p class="page-desc">15 ready-to-use prompts to add specific features to any website.</p>
+  </div>
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab(this,'feat-interaction')">💬 Interaction</button>
+    <button class="tab-btn" onclick="switchTab(this,'feat-content')">📝 Content</button>
+    <button class="tab-btn" onclick="switchTab(this,'feat-conversion')">🎯 Conversion</button>
+    <button class="tab-btn" onclick="switchTab(this,'feat-seo')">🔍 SEO & Tech</button>
+  </div>
+  <div id="feat-interaction" class="tab-content active"><div class="prompts-grid" id="feat-interaction-grid"></div></div>
+  <div id="feat-content" class="tab-content"><div class="prompts-grid" id="feat-content-grid"></div></div>
+  <div id="feat-conversion" class="tab-content"><div class="prompts-grid" id="feat-conversion-grid"></div></div>
+  <div id="feat-seo" class="tab-content"><div class="prompts-grid" id="feat-seo-grid"></div></div>
+</div>
+
+</main>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><span>✅</span> <span id="toast-msg">Copied!</span></div>
+
+<!-- MODAL -->
+<div class="modal" id="template-modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title">Template</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="pdc-section-title" style="font-family:var(--mono);font-size:11px;color:var(--red);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;font-weight:700">Full Prompt</div>
+      <div class="c-data" id="modal-prompt" style="white-space:pre-wrap;line-height:1.8;font-size:13px;color:var(--text)"></div>
+      <div style="margin-top:16px;display:flex;gap:10px">
+        <button class="btn-generate" onclick="copyModalPrompt()">📋 Copy Full Prompt</button>
+        <button class="btn-reset" onclick="closeModal()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══ DATA ═══
+const validationPatterns = [
+  ['Mobile (10-digit)', String.raw`^[6-9]\d{9}$`, 'Indian mobile starting 6-9'],
+  ['Mobile (with +91)', String.raw`^(\+91|91)?[6-9]\d{9}$`, 'With/without country code'],
+  ['Email', String.raw`^[\w._%+\-]+@[\w.\-]+\.[a-zA-Z]{2,}$`, 'Standard email format'],
+  ['PAN Card', String.raw`^[A-Z]{5}[0-9]{4}[A-Z]{1}$`, 'e.g. ABCDE1234F'],
+  ['GST Number', String.raw`^\d{2}[A-Z]{5}\d{4}[A-Z][A-Z\d]Z[A-Z\d]$`, '15-char GST format'],
+  ['Aadhaar', String.raw`^\d{4}\s?\d{4}\s?\d{4}$`, '12-digit with optional spaces'],
+  ['Pincode', String.raw`^[1-9][0-9]{5}$`, '6-digit Indian pincode'],
+  ['IFSC Code', String.raw`^[A-Z]{4}0[A-Z0-9]{6}$`, 'Bank IFSC format'],
+  ['Vehicle Number', String.raw`^[A-Z]{2}\d{2}[A-Z]{1,2}\d{4}$`, 'e.g. MH12AB1234'],
+  ['Invoice Number', String.raw`^INV[-\/]?\d{4}[-\/]?\d{4,6}$`, 'e.g. INV-2024-001234'],
+  ['Date (DD/MM/YYYY)', String.raw`^(0[1-9]|[12]\d|3[01])\/(0[1-9]|1[0-2])\/\d{4}$`, 'Indian date format'],
+  ['Amount', String.raw`^\d{1,10}(\.\d{1,2})?$`, 'Numbers with optional 2 decimals'],
+];
+
+const extractionPatterns = [
+  ['Phone from text', String.raw`[6-9]\d{9}`, '"Call 9876543210 now" → 9876543210'],
+  ['Email from text', String.raw`[\w._%+\-]+@[\w.\-]+\.[a-zA-Z]{2,}`, '"Email info@abc.com" → info@abc.com'],
+  ['Amount with ₹', String.raw`₹[\d,]+(?:\.\d{2})?`, '"Total ₹1,24,500" → ₹1,24,500'],
+  ['Date from text', String.raw`\d{2}[\/\-\.]\d{2}[\/\-\.]\d{4}`, '"Due: 31/03/2025" → 31/03/2025'],
+  ['PIN code', String.raw`\b[1-9]\d{5}\b`, '"Mumbai 400001" → 400001'],
+  ['Invoice number', String.raw`INV[-\/]?\d{4,8}`, '"Ref: INV-20240025" → INV-20240025'],
+  ['PAN from text', String.raw`[A-Z]{5}[0-9]{4}[A-Z]`, '"PAN: ABCDE1234F" → ABCDE1234F'],
+  ['GST from text', String.raw`\d{2}[A-Z]{5}\d{4}[A-Z][A-Z\d]Z[A-Z\d]`, 'Extracts 15-char GST'],
+];
+
+const sheetsPatterns = [
+  ['Validate mobile in A2', `=REGEXMATCH(A2,"^[6-9][0-9]{9}$")`, 'Returns TRUE/FALSE'],
+  ['Extract phone from text', `=REGEXEXTRACT(A2,"[6-9][0-9]{9}")`, 'Pulls 10-digit number'],
+  ['Validate email in A2', `=REGEXMATCH(A2,"^[\\w._%+\\-]+@[\\w.\\-]+\\.[a-zA-Z]{2,}$")`, 'Returns TRUE/FALSE'],
+  ['Extract email from A2', `=REGEXEXTRACT(A2,"[\\w._%+\\-]+@[\\w.\\-]+\\.[a-zA-Z]{2,}")`, 'Pulls email address'],
+  ['Clean phone (remove +91)', `=REGEXREPLACE(A2,"^(\\+91|91)","")`, 'Strips country code'],
+  ['Validate PAN in A2', `=REGEXMATCH(A2,"^[A-Z]{5}[0-9]{4}[A-Z]$")`, 'Returns TRUE/FALSE'],
+  ['Extract amount ₹', `=REGEXEXTRACT(A2,"₹[\\d,]+(?:\\.\\d{2})?")`, 'Gets ₹ amount from text'],
+  ['Validate pincode', `=REGEXMATCH(A2,"^[1-9][0-9]{5}$")`, 'Returns TRUE/FALSE'],
+  ['Standardize phone', `=RIGHT(REGEXREPLACE(A2,"\\D",""),10)`, 'Standardize to 10 digits'],
+  ['Validate GST', `=REGEXMATCH(A2,"^\\d{2}[A-Z]{5}\\d{4}[A-Z][A-Z\\d]Z[A-Z\\d]$")`, 'Returns TRUE/FALSE'],
+];
+
+const cheatsheetData = [
+  ['Indian Mobile', '^[6-9]\\d{9}$', '=REGEXMATCH(A2,"^[6-9][0-9]{9}$")'],
+  ['Email Validate', '^[\\w._%+\\-]+@[\\w.\\-]+\\.[a-zA-Z]{2,}$', '=REGEXMATCH(A2,"[\\w._%+\\-]+@[\\w.]+\\.[a-zA-Z]{2,}")'],
+  ['PAN Card', '^[A-Z]{5}[0-9]{4}[A-Z]$', '=REGEXMATCH(A2,"^[A-Z]{5}[0-9]{4}[A-Z]$")'],
+  ['Pincode', '^[1-9][0-9]{5}$', '=REGEXMATCH(A2,"^[1-9][0-9]{5}$")'],
+  ['Invoice No.', '^INV[-\\/]?\\d{4,8}$', '=REGEXMATCH(A2,"^INV[-/]?[0-9]{4,8}$")'],
+];
+
+const regexPrompts = [
+  { type:'badge-ai', label:'AI GENERATE', title:'🤖 Regex Pattern Generator', prompt:'Generate a regex pattern to validate Indian mobile numbers (starting with 6, 7, 8, or 9, exactly 10 digits). Also provide: 1) Pattern explanation, 2) Google Sheets formula using REGEXMATCH, 3) 5 valid examples, 4) 5 invalid examples.' },
+  { type:'badge-ai', label:'AI EXPLAIN', title:'📖 Pattern Explainer', prompt:'Explain this regex pattern step by step for a beginner: ^[A-Z]{5}[0-9]{4}[A-Z]$ — What does each part mean? Which real document uses this format? Give 3 valid and 3 invalid examples.' },
+  { type:'badge-sheets', label:'SHEETS', title:'📊 Bulk Data Validator', prompt:'I have a Google Sheets column (A2:A1000) with mobile numbers. Some are 10-digit, some have +91, some have spaces. Write me: 1) Formula in column B to validate, 2) Formula in column C to clean/standardize to 10-digit format, 3) Formula in column D to count total valid vs invalid.' },
+  { type:'badge-ai', label:'AI DEBUG', title:'🐛 Regex Debugger', prompt:'This regex pattern is not working correctly: [PASTE YOUR BROKEN PATTERN]. Test data: [PASTE DATA]. Expected: [WHAT YOU WANT]. Please: 1) Identify the bug, 2) Fix the pattern, 3) Explain what was wrong, 4) Provide the corrected Google Sheets formula.' },
+  { type:'badge-logic', label:'DATA CLEAN', title:'🧹 Data Cleaning Prompt', prompt:'I have messy CRM export data with inconsistent phone formats: 9876543210, +91-9876543210, 98765 43210, 91 9876543210. Write Google Sheets formulas to: 1) Clean all to 10-digit format, 2) Flag invalid numbers using conditional formatting, 3) Count valid vs invalid.' },
+  { type:'badge-regex', label:'PRACTICE', title:'🎯 Practice Data Generator', prompt:'Generate a practice dataset for regex workshop. Create a table with 20 rows: mobile numbers (mix valid/invalid), emails (mix valid/invalid), PAN numbers (some correct, some wrong), GST numbers (some valid, some invalid). Mark each row VALID or INVALID.' },
+  { type:'badge-ai', label:'AI CHALLENGE', title:'🏆 Challenge Creator', prompt:'Act as a regex trainer. Create 10 business regex challenges increasing in difficulty. Each challenge: Problem statement + Sample data + Expected output + Hint + Solution pattern + Google Sheets formula. Start easy (phone validation) and end hard (complex extraction).' },
+  { type:'badge-sheets', label:'SHEETS ADVANCED', title:'⚡ Sheets Quality Dashboard', prompt:'I want to build a data quality dashboard in Google Sheets. My data has: Name, Mobile, Email, PAN, City, Pincode, Amount. Write: 1) Validation formula for each column, 2) Summary row showing % valid per column, 3) Conditional formatting to highlight invalid cells red, 4) Overall data quality score out of 100.' },
+  { type:'badge-logic', label:'AUTOMATION', title:'🤖 App Script + Regex', prompt:'Write a Google Apps Script function that: 1) Reads column A (mobile numbers), 2) Validates each with regex /^[6-9]\\d{9}$/, 3) Writes VALID or INVALID in column B, 4) Highlights invalid rows red, 5) Shows popup summary with valid/invalid count. Add comments explaining each step.' },
+  { type:'badge-ai', label:'TEACHING', title:'👩‍🏫 Training Session Script', prompt:'Act as a corporate trainer. Write a 30-minute session plan to teach regex to MIS executives who know Google Sheets but never heard of regex. Include: 1) Opening hook, 2) 3 core concepts with examples, 3) Live demo steps, 4) Practice exercise, 5) Q&A guide.' },
+  { type:'badge-regex', label:'FORMULA BUILDER', title:'🔢 Formula From Description', prompt:'Convert this plain English description to regex: "Validate that the cell contains exactly: 2 capital letters, followed by 2 digits, followed by 1-2 capital letters, followed by 4 digits. Like MH12AB1234 (vehicle registration)." Explain pattern and provide 5 test examples.' },
+  { type:'badge-sheets', label:'AUDIT REPORT', title:'📋 Regex Audit Report', prompt:'Create a complete Google Sheets audit template that: 1) Takes raw data in Sheet1, 2) Uses REGEXMATCH to validate mobile, email, pincode, 3) Creates Sheet2 dashboard showing total records, valid/invalid counts, duplicate detection. Provide all formulas.' },
+];
+
+const challenges = [
+  { num:1, title:'Validate Distributor Mobile List', meta:'500 mobile numbers from field team', diff:'easy',
+    problem:'Your field team collected 500 mobile numbers. Some are invalid. Validate them.',
+    data:['9876543210 ✅','+ 91 9876543210 ❌','12345678 ❌','8800112233 ✅'],
+    pattern:'^[6-9]\\d{9}$', sheet:'=REGEXMATCH(A2,"^[6-9][0-9]{9}$")', expected:'TRUE for 10-digit numbers starting with 6-9' },
+  { num:2, title:'Validate Customer Email IDs', meta:'CRM export — email column', diff:'easy',
+    problem:'Marketing wants to send emails but the column has junk entries. Find valid ones.',
+    data:['raj@example.com ✅','test@.com ❌','no-at-sign.com ❌','a+b@mail.co ✅'],
+    pattern:'^[\\w._%+\\-]+@[\\w.\\-]+\\.[a-zA-Z]{2,}$', sheet:'=REGEXMATCH(A2,"[\\w._%+\\-]+@[\\w.\\-]+\\.[a-zA-Z]{2,}")', expected:'TRUE for properly formatted emails' },
+  { num:3, title:'Extract Phone Numbers from Emails', meta:'Bulk email text parsing', diff:'medium',
+    problem:'You have 200 customer inquiry emails. Extract all phone numbers mentioned.',
+    data:['"Please call 9876543210 or 8800112233"','"My number is +91 9999888877"'],
+    pattern:'[6-9]\\d{9}', sheet:'=REGEXEXTRACT(A2,"[6-9][0-9]{9}")', expected:'Extracts first valid 10-digit number from text' },
+  { num:4, title:'Validate PAN Numbers', meta:'Finance team data entry', diff:'medium',
+    problem:'Before processing TDS, validate all PAN numbers in your finance sheet.',
+    data:['ABCDE1234F ✅','abcde1234F ❌','ABCDE12345 ❌','PQRST9876G ✅'],
+    pattern:'^[A-Z]{5}[0-9]{4}[A-Z]{1}$', sheet:'=REGEXMATCH(A2,"^[A-Z]{5}[0-9]{4}[A-Z]$")', expected:'5 uppercase + 4 digits + 1 uppercase' },
+  { num:5, title:'Clean Phone Format to 10-digit', meta:'Imported from 3 different sources', diff:'medium',
+    problem:'Phones came as: 9876543210, +91-9876543210, 0091-9876543210. Standardize all.',
+    data:['+91-9876543210 → 9876543210','0091 98765 43210 → 9876543210'],
+    pattern:'Remove all non-digits, then remove leading 91', sheet:'=RIGHT(REGEXREPLACE(A2,"\\D",""),10)', expected:'All numbers standardized to exact 10 digits' },
+  { num:6, title:'Validate GST Numbers', meta:'Vendor onboarding form', diff:'medium',
+    problem:'Before adding vendors to your system, validate their 15-digit GST numbers.',
+    data:['27ABCDE1234F1Z5 ✅','ABCDE1234F1Z5 ❌','27ABCDE1234F1Z ❌'],
+    pattern:'^\\d{2}[A-Z]{5}\\d{4}[A-Z][A-Z\\d]Z[A-Z\\d]$', sheet:'=REGEXMATCH(A2,"^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][A-Z0-9]Z[A-Z0-9]$")', expected:'TRUE for valid 15-character GST format' },
+  { num:7, title:'Validate Invoice Number Format', meta:'Accounts receivable system', diff:'medium',
+    problem:'Invoices should follow INV-YYYY-XXXXXX format. Catch non-compliant entries.',
+    data:['INV-2024-001234 ✅','invoice-2024-1 ❌','INV-24-001234 ❌'],
+    pattern:'^INV-\\d{4}-\\d{6}$', sheet:'=REGEXMATCH(A2,"^INV-[0-9]{4}-[0-9]{6}$")', expected:'Exactly INV-YYYY-NNNNNN format' },
+  { num:8, title:'Validate Vehicle Numbers', meta:'Logistics & transport fleet', diff:'hard',
+    problem:'Fleet management needs valid Indian vehicle numbers for challan processing.',
+    data:['MH12AB1234 ✅','MH12A1234 ✅','mh12ab1234 ❌','MH-12-AB-1234 ❌'],
+    pattern:'^[A-Z]{2}\\d{2}[A-Z]{1,2}\\d{4}$', sheet:'=REGEXMATCH(A2,"^[A-Z]{2}[0-9]{2}[A-Z]{1,2}[0-9]{4}$")', expected:'2 letters + 2 digits + 1-2 letters + 4 digits, all uppercase' },
+  { num:9, title:'Extract Amounts from Order Notes', meta:'Customer notes field', diff:'hard',
+    problem:'Sales notes contain amounts like "order of ₹45,000" — extract all amounts.',
+    data:['"Order ₹1,24,500 received" → ₹1,24,500','"Amount is ₹750.00" → ₹750.00'],
+    pattern:'₹[\\d,]+(?:\\.\\d{2})?', sheet:'=IFERROR(REGEXEXTRACT(A2,"₹[0-9,]+(?:\\.[0-9]{2})?"),"")', expected:'Extracts ₹ amounts including commas and decimals' },
+  { num:10, title:'Full Data Quality Audit', meta:'Monthly CRM data cleanup', diff:'hard',
+    problem:'Flag rows where EITHER mobile OR email OR pincode is invalid as "INCOMPLETE DATA".',
+    data:['9876543210, test@abc.com, 400001 → VALID','12345, bad-email, 400001 → INCOMPLETE DATA'],
+    pattern:'Combined REGEXMATCH with AND logic', sheet:'=IF(AND(REGEXMATCH(A2,"^[6-9][0-9]{9}$"),REGEXMATCH(B2,"[\\w]+@[\\w]+\\.[a-z]{2,}"),REGEXMATCH(C2,"^[1-9][0-9]{5}$")),"VALID","INCOMPLETE DATA")', expected:'"VALID" only when all 3 fields pass their regex checks' },
+];
+
+const websiteTemplates = [
+  { icon:'🏪', name:'Retail Showroom', desc:'Electronics, clothing, furniture, jewellery', tags:['Hero','Products','Offers','Contact'],
+    prompt:`Act as a professional UI/UX website designer and frontend developer.\n\nCreate a complete modern responsive website for a retail showroom.\n\nCompany: {{COMPANY_NAME}}\nIndustry: Retail Showroom\nTheme Color: Red & White\nTarget Audience: Urban shoppers age 25-55\n\nRequirements:\n- Hero section with CTA "Visit Showroom" and "Book Appointment"\n- About Us section with trust signals\n- Products/Collections showcase with category filter\n- Offers & Promotions section with countdown timer\n- Testimonials carousel (3 customer reviews)\n- Store Location with Google Maps embed\n- Contact form with WhatsApp button\n- Footer with social media links\n\nGenerate complete HTML + CSS + JS code in a single file.` },
+  { icon:'🏥', name:'Clinic / Hospital', desc:'Doctors, clinics, diagnostics, hospitals', tags:['Appointments','Doctors','Services','FAQ'],
+    prompt:`Act as a healthcare website designer.\n\nCreate a complete, trustworthy website for a medical clinic.\n\nCompany: {{COMPANY_NAME}}\nTheme Color: Red & White\nTarget Audience: Patients and families\n\nRequirements:\n- Hero with "Book Appointment Online" CTA\n- Specialities / Services section\n- Our Doctors section with photo, name, specialization\n- Patient Testimonials with star rating\n- Online Appointment Booking Form\n- FAQ section (5 common questions)\n- Emergency contact strip at top\n- Footer with address, phone, hours\n\nGenerate complete HTML + CSS + JS.` },
+  { icon:'🚚', name:'Logistics Company', desc:'Transport, fleet, delivery, supply chain', tags:['Tracking','Services','Fleet','Quote'],
+    prompt:`Act as an industrial website designer.\n\nCreate a professional website for a logistics and transport company.\n\nCompany: {{COMPANY_NAME}}\nTheme Color: Red & White\nTarget Audience: B2B — manufacturers, distributors\n\nRequirements:\n- Hero: "Delivering On Time, Every Time"\n- Services: FTL, LTL, Last Mile, Cold Chain\n- Stats: years, cities, clients, vehicles\n- Fleet showcase\n- Request Quote form\n- Contact with 24/7 helpline\n\nGenerate complete HTML + CSS + JS.` },
+  { icon:'🏗️', name:'Manufacturing Unit', desc:'Factory, production, B2B industrial', tags:['Products','Certifications','Enquiry','Process'],
+    prompt:`Act as an industrial B2B website designer.\n\nCreate a website for a manufacturing company.\n\nCompany: {{COMPANY_NAME}}\nTheme Color: Red & White\nTarget Audience: B2B buyers, procurement teams\n\nRequirements:\n- Hero: "Quality Manufacturing Since {{YEAR}}"\n- Product Categories with images and specs\n- Manufacturing Process (4-step visual)\n- Quality Certifications (ISO, BIS logos area)\n- Bulk Enquiry Form\n- Contact + GST details in footer\n\nGenerate complete HTML + CSS + JS.` },
+  { icon:'🍽️', name:'Restaurant / Food', desc:'Restaurant, cloud kitchen, catering', tags:['Menu','Reservations','Gallery','Order'],
+    prompt:`Act as a food & hospitality website designer.\n\nCreate an appetizing website for a restaurant.\n\nCompany: {{COMPANY_NAME}}\nTheme Color: Red & White\nTarget Audience: Food lovers, families, corporates\n\nRequirements:\n- Hero with food imagery placeholder\n- Signature Dishes section with price tags\n- Menu Categories with photos\n- Table Reservation form\n- Photo Gallery (Instagram-style grid)\n- Customer Reviews\n- Online Order / Zomato CTA\n\nGenerate HTML + CSS + JS.` },
+  { icon:'🏘️', name:'Real Estate', desc:'Developer, broker, property listing', tags:['Listings','EMI Calc','Tour','Enquiry'],
+    prompt:`Act as a real estate website designer.\n\nCreate a property website for a real estate company.\n\nCompany: {{COMPANY_NAME}}\nTheme Color: Red & White\nTarget Audience: Home buyers and investors\n\nRequirements:\n- Hero with search bar (Location, Type, Budget)\n- Featured Properties with cards\n- Ongoing Projects with progress indicator\n- EMI Calculator (interactive JS)\n- Testimonials from happy buyers\n- Site Visit Booking form\n- Contact with WhatsApp CTA\n\nGenerate HTML + CSS + JS.` },
+  { icon:'🎓', name:'Educational Institute', desc:'School, coaching, training, courses', tags:['Courses','Results','Admissions','Faculty'],
+    prompt:`Act as an education sector website designer.\n\nCreate a website for an educational institute.\n\nCompany: {{COMPANY_NAME}}\nTheme Color: Red & White\nTarget Audience: Students and parents\n\nRequirements:\n- Hero: "Shape Your Future at {{COMPANY_NAME}}"\n- Courses / Programs with duration and fees\n- Success Stories / Results section\n- Faculty section with qualifications\n- Admissions Process (4 steps)\n- Demo Class / Free Trial CTA\n- Enquiry form\n\nGenerate HTML + CSS + JS.` },
+  { icon:'💼', name:'Consulting Firm', desc:'Business consulting, CA, legal, advisory', tags:['Services','Case Studies','Team','Consultation'],
+    prompt:`Act as a professional services website designer.\n\nCreate a website for a business consulting firm.\n\nCompany: {{COMPANY_NAME}}\nTheme Color: Red & White\nTarget Audience: Business owners, CFOs, founders\n\nRequirements:\n- Hero: "Strategic Advice. Measurable Results."\n- Services section: 6 service cards\n- Case Studies / Success metrics\n- Our Approach: 5-step process\n- Team section\n- Free Consultation Booking form\n- Blog preview (3 latest articles)\n\nGenerate HTML + CSS + JS.` },
+];
+
+const featurePrompts = {
+  interaction: [
+    { type:'badge-ai', label:'CHATBOT', title:'💬 AI Chatbot Widget', prompt:'Add a professional website chatbot. Company: {{COMPANY_NAME}}. The chatbot should: 1) Greet with company name, 2) Show 4 quick-reply buttons: "Our Services", "Get a Quote", "Contact Us", "Working Hours", 3) Answer each topic with pre-set responses, 4) Capture name + mobile, 5) Show WhatsApp redirect button. Floating button bottom-right. Complete JavaScript + CSS embed code.' },
+    { type:'badge-web', label:'WHATSAPP', title:'📱 WhatsApp Float Button', prompt:'Add a floating WhatsApp button to my website. Number: {{WHATSAPP_NUMBER}}. Pre-filled message: "Hi, I visited your website and want to know more." Button should: float bottom-right, have animation, show tooltip "Chat with us" on hover, work on mobile and desktop. Provide CSS + JS code snippet.' },
+    { type:'badge-logic', label:'CONTACT FORM', title:'📧 Smart Contact Form', prompt:'Create a smart contact form with: Name, Mobile, Email, City, Service Interested In (dropdown), Message. Features: Real-time validation using regex for mobile and email, error messages in red, success animation on submit, WhatsApp integration to receive form data. Complete HTML + CSS + JS.' },
+    { type:'badge-ai', label:'BOOKING', title:'📅 Appointment Booking', prompt:'Build an appointment booking widget. Fields: Name, Mobile, Service Type (dropdown), Preferred Date (disable past dates and Sundays), Time Slot (available slots only), Special Notes. On submit: show confirmation with booking reference number, send WhatsApp confirmation. HTML + CSS + JS.' },
+  ],
+  content: [
+    { type:'badge-web', label:'TESTIMONIALS', title:'⭐ Testimonial Carousel', prompt:'Create a testimonial section with auto-scrolling carousel. 5 testimonials with: photo placeholder, name, city, star rating, review text. Features: auto-scroll every 4 seconds, pause on hover, dot indicators, smooth fade transition. Mobile responsive. CSS + JS.' },
+    { type:'badge-ai', label:'GALLERY', title:'🖼️ Photo Gallery Grid', prompt:'Create a masonry photo gallery. Features: 3-column desktop, 2-column tablet, 1-column mobile, category filter tabs (All, Products, Office, Events), lightbox popup on click with prev/next, lazy loading, hover zoom effect. Pure CSS + JS, no jQuery.' },
+    { type:'badge-logic', label:'FAQ', title:'❓ Animated FAQ Section', prompt:'Create an FAQ section with 8 questions. Accordion style with smooth animation, search bar to filter questions, category tabs (General, Pricing, Delivery, Returns), "Was this helpful?" thumbs up/down on each answer. Schema markup for SEO. HTML + CSS + JS.' },
+    { type:'badge-sheets', label:'TEAM', title:'👥 Meet the Team Section', prompt:'Design a Meet the Team section. 6 team members with: photo placeholder circle, name, designation, specialization tags. Layout: 3-column grid. Hover effect: flip card showing short bio on back. Mobile: 2-column then 1-column. Elegant styling. HTML + CSS.' },
+  ],
+  conversion: [
+    { type:'badge-web', label:'PRICING TABLE', title:'💰 Pricing Table', prompt:'Create a 3-tier pricing table. Tiers: Basic (₹{{PRICE1}}/month), Standard (₹{{PRICE2}}/month, MOST POPULAR badge), Premium (₹{{PRICE3}}/month). Each tier: 5-7 features with checkmarks/crosses, CTA button, hover highlight, annual/monthly toggle (20% discount). CSS + JS.' },
+    { type:'badge-ai', label:'POPUP', title:'🎯 Lead Capture Popup', prompt:'Create a lead capture popup that: appears after 8 seconds, shows ONLY ONCE per session, has exit-intent trigger. Offer: "Get a FREE Consultation". Fields: Name, Mobile. Design: centered overlay with blur background, urgency message "Limited slots this week", close button. JS + CSS.' },
+    { type:'badge-logic', label:'COUNTER', title:'📊 Stats Counter Animation', prompt:'Create an animated stats counter section. 4 metrics: Years in Business (to 20), Happy Clients (to 5000), Cities Covered (to 50), Projects Done (to 10000+). Animation: count up from 0 when section scrolls into view using Intersection Observer. Format large numbers with commas. CSS + JS.' },
+    { type:'badge-web', label:'EMI CALC', title:'🧮 EMI Calculator Widget', prompt:'Build an interactive EMI calculator. Inputs: Principal amount (slider + number), Interest rate (slider), Tenure in months (slider). Live output: Monthly EMI, Total amount payable, Total interest, Payment breakdown using Chart.js CDN. Clean card design with slider styling. HTML + CSS + JS.' },
+  ],
+  seo: [
+    { type:'badge-ai', label:'SEO META', title:'🔍 SEO Meta Tags Generator', prompt:'Generate complete SEO meta tags for {{COMPANY_NAME}} website. Include: Title tag (under 60 chars), Meta description (under 160 chars), Open Graph tags, Twitter Card tags, Schema.org JSON-LD for LocalBusiness, Canonical URL, Robots meta. Also write alt text for 5 key images. Industry: {{INDUSTRY}}, Location: {{CITY}}.' },
+    { type:'badge-logic', label:'ANALYTICS', title:'📈 Analytics Setup Guide', prompt:'Provide complete analytics setup code for my website: 1) Google Analytics 4 snippet, 2) Google Tag Manager setup, 3) Facebook Pixel code, 4) WhatsApp button click tracking, 5) Form submission event tracking, 6) Scroll depth tracking, 7) Call button tracking. Explain what each tracks and why it matters.' },
+    { type:'badge-web', label:'PERFORMANCE', title:'⚡ Speed Optimization Guide', prompt:'Review my website and provide complete performance optimization guide: 1) Image optimization recommendations, 2) CSS minification, 3) Lazy loading implementation, 4) Critical CSS extraction, 5) Font loading optimization, 6) Caching headers, 7) Core Web Vitals checklist. Provide actual code fixes.' },
+    { type:'badge-ai', label:'CONTENT', title:'✍️ Website Copy Generator', prompt:'Write complete website copy for {{COMPANY_NAME}} in {{INDUSTRY}}. Target audience: {{AUDIENCE}}. USP: {{USP}}. Include: 1) Hero headline + subheadline, 2) About Us (80 words), 3) 6 service descriptions (30 words each), 4) 3 testimonials, 5) FAQ answers (5 questions), 6) CTA phrases for buttons. Tone: professional/friendly/bold.' },
+  ],
+};
+
+// ═══ INIT ═══
+document.addEventListener('DOMContentLoaded', () => {
+  buildCheatsheet();
+  buildValidationTable();
+  buildExtractionTable();
+  buildSheetsTable();
+  buildRegexPrompts();
+  buildChallenges();
+  buildTemplatesGrid();
+  buildFeatureGrids();
+  buildFeaturesChecklist('full-website');
+  buildPrompt();
+});
+
+// ═══ NAVIGATION ═══
+const pageNames = {
+  'regex-intro':'Introduction','regex-tester':'Live Tester','regex-patterns':'Pattern Library',
+  'regex-prompts':'AI Prompts','regex-challenges':'Challenges','studio-overview':'AI Studio Overview',
+  'studio-builder':'Prompt Builder','studio-templates':'Templates','studio-features':'Feature Prompts'
+};
+
+function navigate(pageId, navEl) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(pageId).classList.add('active');
+  if (navEl) navEl.classList.add('active');
+  document.getElementById('breadcrumb-current').textContent = pageNames[pageId] || pageId;
+}
+
+function switchTab(btn, tabId) {
+  const parent = btn.closest('.page');
+  parent.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  parent.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(tabId).classList.add('active');
+}
+
+// ═══ REGEX TESTER ═══
+const presets = {
+  mobile:{ pattern:'^[6-9]\\d{9}$', flags:'g', data:'9876543210\n+91 9876543210\n98765\n8800112233\n0000000000\n7777777777\nhello' },
+  email:{ pattern:'^[\\w._%+\\-]+@[\\w.\\-]+\\.[a-zA-Z]{2,}$', flags:'g', data:'user@example.com\nbad@.com\ntest@mail.co.in\nno-at-sign.com\nadmin@company.in' },
+  pan:{ pattern:'^[A-Z]{5}[0-9]{4}[A-Z]$', flags:'g', data:'ABCDE1234F\nabcde1234f\nABCDE12345\nPQRST9876G\nXYZAB5678K' },
+  gst:{ pattern:'^\\d{2}[A-Z]{5}\\d{4}[A-Z][A-Z\\d]Z[A-Z\\d]$', flags:'g', data:'27ABCDE1234F1Z5\nABCDE1234F1Z5\n29PQRST5678G1Z9\n27ABCDE1234' },
+};
+
+function loadPreset(type) {
+  const p = presets[type];
+  document.getElementById('regexPattern').value = p.pattern;
+  document.getElementById('regexFlags').value = p.flags;
+  document.getElementById('regexTestData').value = p.data;
+  runRegex();
+}
+
+function runRegex() {
+  const patStr = document.getElementById('regexPattern').value.trim();
+  const data = document.getElementById('regexTestData').value;
+  const lines = data.split('\n');
+  if (!patStr) return;
+
+  let regex;
+  try { regex = new RegExp(patStr); } catch(e) {
+    document.getElementById('regexResult').innerHTML = `<span style="color:var(--red)">⚠ Invalid Pattern: ${e.message}</span>`;
+    return;
+  }
+
+  let matchCount = 0, totalLines = lines.filter(l => l.trim()).length;
+  let outputHTML = '';
+
+  lines.forEach(line => {
+    if (!line.trim()) { outputHTML += '<br>'; return; }
+    const matches = line.match(new RegExp(patStr, 'g'));
+    if (matches) {
+      matchCount++;
+      const highlighted = line.replace(new RegExp(patStr, 'g'), m => `<span class="match">${m}</span>`);
+      outputHTML += `<div style="padding:2px 0">${highlighted} <span style="color:var(--green);font-size:11px;margin-left:8px;font-weight:700">✓ MATCH</span></div>`;
+    } else {
+      outputHTML += `<div style="padding:2px 0;color:var(--text3)">${line} <span style="color:var(--red);font-size:11px;margin-left:8px;font-weight:700">✗ NO MATCH</span></div>`;
+    }
+  });
+
+  document.getElementById('regexOutput').innerHTML = outputHTML;
+  document.getElementById('regexResult').innerHTML = `
+    <span class="result-badge ${matchCount > 0 ? 'match' : 'no-match'}">${matchCount > 0 ? '✓ MATCHES FOUND' : '✗ NO MATCHES'}</span>
+    <span class="result-count">Matched <span>${matchCount}</span> of <span>${totalLines}</span> lines</span>
+    <span style="color:var(--text3);font-size:11px;margin-left:auto">Pattern: <span style="color:var(--red);font-family:var(--mono)">${patStr}</span></span>
+  `;
+  const safe = patStr.replace(/\\/g,'\\\\').replace(/"/g,'\\"');
+  document.getElementById('sheetsFormula').value = `=REGEXMATCH(A2,"${safe}")`;
+}
+
+function clearTester() {
+  document.getElementById('regexPattern').value = '';
+  document.getElementById('regexTestData').value = '';
+  document.getElementById('regexOutput').innerHTML = 'Results will appear here...';
+  document.getElementById('regexResult').innerHTML = '<div style="color:var(--text3);font-size:12px">▶ Press "Run Test" to see results</div>';
+  document.getElementById('sheetsFormula').value = '';
+}
+
+function copySheetFormula() {
+  const val = document.getElementById('sheetsFormula').value;
+  if (val) { navigator.clipboard.writeText(val); toast('Sheets formula copied!'); }
+}
+
+// ═══ BUILD TABLES ═══
+function buildCheatsheet() {
+  document.getElementById('cheatsheet-table').innerHTML = cheatsheetData.map(([u,p,f]) =>
+    `<tr><td style="font-weight:700">${u}</td><td><span class="pattern-code">${p}</span></td><td><span class="pattern-code" style="color:var(--blue);background:var(--blue-dim);border-color:rgba(29,78,216,0.2)">${f}</span></td></tr>`).join('');
+}
+
+function buildValidationTable() {
+  document.getElementById('validation-patterns').innerHTML = validationPatterns.map(([f,p,d]) =>
+    `<tr><td style="font-weight:700">${f}</td><td><span class="pattern-code">${p}</span></td><td class="pattern-desc">${d}</td><td><button class="btn-copy" onclick="copyText(this,'${p.replace(/'/g,"\\'")}')">📋 Copy</button></td></tr>`).join('');
+}
+
+function buildExtractionTable() {
+  document.getElementById('extraction-patterns').innerHTML = extractionPatterns.map(([f,p,e]) =>
+    `<tr><td style="font-weight:700">${f}</td><td><span class="pattern-code">${p}</span></td><td class="pattern-desc" style="font-size:12px">${e}</td><td><button class="btn-copy" onclick="copyText(this,'${p.replace(/'/g,"\\'")}')">📋 Copy</button></td></tr>`).join('');
+}
+
+function buildSheetsTable() {
+  const tbody = document.getElementById('sheets-patterns');
+  tbody.innerHTML = sheetsPatterns.map(([t,f,r], i) =>
+    `<tr><td style="font-weight:700">${t}</td><td><span class="pattern-code" style="color:var(--blue);background:var(--blue-dim);font-size:11px">${f.replace(/</g,'&lt;')}</span></td><td class="pattern-desc">${r}</td><td><button class="btn-copy" id="sheetsbtn-${i}">📋 Copy</button></td></tr>`).join('');
+  sheetsPatterns.forEach(([t,f,r], i) => {
+    document.getElementById('sheetsbtn-'+i).addEventListener('click', function(){ copyText(this, f); });
+  });
+}
+
+// ═══ BUILD PROMPTS ═══
+function buildRegexPrompts() {
+  document.getElementById('regex-prompts-grid').innerHTML = regexPrompts.map(p => `
+    <div class="prompt-card">
+      <div class="prompt-card-header"><span class="prompt-type-badge ${p.type}">${p.label}</span></div>
+      <div class="prompt-card-title">${p.title}</div>
+      <div class="prompt-card-body">${p.prompt.substring(0,160)}...</div>
+      <div class="prompt-card-footer">
+        <button class="btn-copy" onclick="copyText(this,\`${p.prompt.replace(/`/g,'\\`')}\`)">📋 Copy</button>
+        <button class="btn-use" onclick="openModalWithPrompt('${p.title.replace(/'/g,"\\'")}',\`${p.prompt.replace(/`/g,'\\`')}\`)">View Full →</button>
+      </div>
+    </div>`).join('');
+}
+
+function buildChallenges() {
+  document.getElementById('challenges-list').innerHTML = challenges.map(c => `
+    <div class="challenge-card" id="ch-${c.num}">
+      <div class="challenge-header" onclick="toggleChallenge(${c.num})">
+        <div class="challenge-num">${c.num < 10 ? '0'+c.num : c.num}</div>
+        <div class="challenge-info">
+          <div class="challenge-title">${c.title}</div>
+          <div class="challenge-meta">${c.meta}</div>
+        </div>
+        <span class="difficulty diff-${c.diff}">${c.diff.toUpperCase()}</span>
+        <span class="challenge-chevron">▾</span>
+      </div>
+      <div class="challenge-body">
+        <div class="c-section"><div class="c-label">Problem</div><div class="c-data">${c.problem}</div></div>
+        <div class="c-section"><div class="c-label">Sample Data</div><div class="c-data">${c.data.map(d=>`<div>${d}</div>`).join('')}</div></div>
+        <div class="c-section"><div class="c-label">Regex Pattern (Solution)</div><div class="c-data"><span style="color:var(--red);font-weight:700">${c.pattern}</span></div></div>
+        <div class="c-section"><div class="c-label">Google Sheets Formula</div><div class="c-data"><span style="color:var(--blue)">${c.sheet.replace(/</g,'&lt;')}</span></div></div>
+        <div class="c-section"><div class="c-label">Expected Result</div><div class="c-data"><span style="color:var(--green)">${c.expected}</span></div></div>
+        <div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap">
+          <button class="btn-copy" onclick="copyText(this,'${c.pattern.replace(/'/g,"\\'")}')">📋 Copy Pattern</button>
+          <button class="btn-copy" onclick="copyText(this,\`${c.sheet.replace(/`/g,'\\`')}\`)">📊 Copy Formula</button>
+          <button class="btn-use" onclick="loadPatternToTester('${c.pattern.replace(/'/g,"\\'")}')">▶ Test in Tester</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function toggleChallenge(num) {
+  document.getElementById('ch-'+num).classList.toggle('open');
+}
+
+function loadPatternToTester(pattern) {
+  navigate('regex-tester', document.querySelectorAll('.nav-item')[1]);
+  document.getElementById('regexPattern').value = pattern;
+}
+
+// ═══ TEMPLATES ═══
+function buildTemplatesGrid() {
+  document.getElementById('templates-grid').innerHTML = websiteTemplates.map((t,i) => `
+    <div class="template-card" onclick="openTemplate(${i})">
+      <div class="template-preview"><span>${t.icon}</span></div>
+      <div class="template-info">
+        <div class="template-name">${t.name}</div>
+        <div class="template-desc">${t.desc}</div>
+        <div class="template-tags">${t.tags.map(tag=>`<span class="template-tag">${tag}</span>`).join('')}</div>
+      </div>
+    </div>`).join('');
+}
+
+let currentModalPrompt = '';
+
+function openTemplate(idx) {
+  const t = websiteTemplates[idx];
+  document.getElementById('modal-title').textContent = `${t.icon} ${t.name} Template`;
+  document.getElementById('modal-prompt').textContent = t.prompt;
+  currentModalPrompt = t.prompt;
+  document.getElementById('template-modal').classList.add('open');
+}
+
+function closeModal() { document.getElementById('template-modal').classList.remove('open'); }
+
+function copyModalPrompt() { navigator.clipboard.writeText(currentModalPrompt); toast('Template prompt copied!'); }
+
+function openModalWithPrompt(title, promptText) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-prompt').textContent = promptText;
+  currentModalPrompt = promptText;
+  document.getElementById('template-modal').classList.add('open');
+}
+
+// ═══ FEATURE GRIDS ═══
+function buildFeatureGrids() {
+  Object.entries(featurePrompts).forEach(([key, arr]) => {
+    const grid = document.getElementById('feat-'+key+'-grid');
+    if (!grid) return;
+    grid.innerHTML = arr.map((p, i) => `
+      <div class="prompt-card">
+        <div class="prompt-card-header"><span class="prompt-type-badge ${p.type}">${p.label}</span></div>
+        <div class="prompt-card-title">${p.title}</div>
+        <div class="prompt-card-body">${p.prompt.substring(0,180)}...</div>
+        <div class="prompt-card-footer">
+          <button class="btn-copy" id="feat-copy-${key}-${i}">📋 Copy</button>
+          <button class="btn-use" id="feat-view-${key}-${i}">View Full →</button>
+        </div>
+      </div>`).join('');
+    arr.forEach((p, i) => {
+      document.getElementById(`feat-copy-${key}-${i}`).addEventListener('click', function(){ copyText(this, p.prompt); });
+      document.getElementById(`feat-view-${key}-${i}`).addEventListener('click', function(){ openModalWithPrompt(p.title, p.prompt); });
+    });
+  });
+}
+
+// ═══ STUDIO BUILDER ═══
+const studioTypes = {
+  'full-website':{ title:'Full Website Generator', sub:'Complete multi-section website with all standard pages.', badge:'FULL SITE', icon:'🌐',
+    features:['Hero Section with CTA','About Us','Services / Products','Testimonials','Gallery / Portfolio','Contact Form','WhatsApp Button','Google Maps','Footer','Mobile Responsive','SEO Meta Tags','Social Links'] },
+  'landing-page':{ title:'High-Converting Landing Page', sub:'Single page focused on one offer or lead capture.', badge:'LANDING', icon:'🎯',
+    features:['Power Headline','Benefit Points (3)','Social Proof','Lead Form','Urgency Timer','FAQ Section','CTA Buttons','Trust Badges'] },
+  'redesign':{ title:'Website Redesign Analyzer', sub:'Analyze existing website and generate improved version.', badge:'REDESIGN', icon:'🔄',
+    features:['Current Site Analysis','UX Issues List','New Structure Layout','Improved Hero','Better CTA Placement','Color Harmony Fix','Typography Upgrade','Mobile Fix'] },
+  'chatbot':{ title:'AI Chatbot Script', sub:'Automated conversation flow with lead capture.', badge:'CHATBOT', icon:'💬',
+    features:['Welcome Message','Quick Reply Buttons','5 FAQ Answers','Lead Capture (Name + Mobile)','WhatsApp Redirect','Working Hours Bot','Service Menu','Escalation to Human'] },
+  'ecommerce':{ title:'E-Commerce Store', sub:'Online store with product catalog and cart.', badge:'ECOMMERCE', icon:'🛒',
+    features:['Product Grid','Category Filter','Product Detail Page','Cart UI','Checkout Form','Payment Methods','Order Tracking CTA','Reviews Section'] },
+  'portfolio':{ title:'Professional Portfolio', sub:'Personal or agency portfolio with work showcase.', badge:'PORTFOLIO', icon:'📁',
+    features:['Hero / Intro','Skills Section','Work Projects Grid','Case Study Pages','Testimonials','Resume Download','Contact Form','Blog Preview'] },
+};
+
+let currentStudioType = 'full-website';
+let checkedFeatures = {};
+
+function buildFeaturesChecklist(type) {
+  currentStudioType = type;
+  checkedFeatures = {};
+  const t = studioTypes[type];
+  const list = document.getElementById('features-checklist');
+  list.innerHTML = t.features.map(f => {
+    checkedFeatures[f] = true;
+    return `<div class="feature-item">
+      <div class="feature-check checked" onclick="toggleFeature(this,'${f.replace(/'/g,"\\'")}')">✓</div>
+      <div class="feature-label">${f}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('builder-title').textContent = t.title;
+  document.getElementById('builder-sub').textContent = t.sub;
+  document.getElementById('builder-badge').textContent = t.badge;
+  document.getElementById('builder-icon').textContent = t.icon;
+  buildPrompt();
+}
+
+function toggleFeature(el, name) {
+  el.classList.toggle('checked');
+  el.textContent = el.classList.contains('checked') ? '✓' : '';
+  checkedFeatures[name] = el.classList.contains('checked');
+  buildPrompt();
+}
+
+function switchStudioType(el, type) {
+  document.querySelectorAll('.studio-nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+  buildFeaturesChecklist(type);
+}
+
+function buildPrompt() {
+  const company = document.getElementById('v-company').value || '{{COMPANY_NAME}}';
+  const industry = document.getElementById('v-industry').value || '{{INDUSTRY}}';
+  const color = document.getElementById('v-color').value || 'Red & White';
+  const audience = document.getElementById('v-audience').value || '{{TARGET_AUDIENCE}}';
+  const ref = document.getElementById('v-ref').value;
+  const usp = document.getElementById('v-usp').value || '{{YOUR_USP}}';
+  const type = studioTypes[currentStudioType];
+  const selectedFeatures = Object.entries(checkedFeatures).filter(([k,v])=>v).map(([k])=>`- ${k}`).join('\n');
+
+  const prompt = `Act as a professional UI/UX website designer and expert frontend developer.
+
+Create a complete, modern, mobile-responsive website.
+
+=== COMPANY DETAILS ===
+Company Name: ${company}
+Industry: ${industry}
+Theme Color: ${color}
+Target Audience: ${audience}
+Unique Selling Point: ${usp}
+${ref ? `Reference Website: ${ref}` : ''}
+
+=== PROMPT TYPE: ${type.badge} ===
+${type.sub}
+
+=== SECTIONS TO INCLUDE ===
+${selectedFeatures}
+
+=== DESIGN REQUIREMENTS ===
+- Professional and premium design
+- Clean typography with clear hierarchy
+- Consistent spacing and alignment
+- Smooth hover effects and micro-animations
+- Fully mobile responsive
+- Fast loading, clean code
+- Business-appropriate tone and colors
+
+=== OUTPUT FORMAT ===
+Generate COMPLETE, ready-to-use HTML + CSS + JavaScript in a single file.
+All styles in <style> tag. All scripts in <script> tag.
+Use Google Fonts for typography.
+No external dependencies except Google Fonts.`;
+
+  document.getElementById('generated-prompt').value = prompt;
+  document.getElementById('char-count').textContent = `${prompt.length} chars`;
+}
+
+function copyGeneratedPrompt() {
+  const p = document.getElementById('generated-prompt').value;
+  if (!p) return;
+  navigator.clipboard.writeText(p);
+  toast('Full prompt copied to clipboard!');
+}
+
+function resetBuilder() {
+  ['v-company','v-industry','v-color','v-audience','v-ref','v-usp'].forEach(id => document.getElementById(id).value = '');
+  buildPrompt();
+}
+
+// ═══ COPY & TOAST ═══
+function copyText(btn, text) {
+  const prev = btn.innerHTML;
+  const doFallback = () => {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.focus(); ta.select();
+    try { document.execCommand('copy'); } catch(e) {}
+    document.body.removeChild(ta);
+  };
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).catch(doFallback);
+  } else { doFallback(); }
+  btn.classList.add('copied');
+  btn.innerHTML = '✅ Copied!';
+  setTimeout(() => { btn.classList.remove('copied'); btn.innerHTML = prev; }, 2000);
+  toast('Copied to clipboard!');
+}
+
+function toast(msg) {
+  document.getElementById('toast-msg').textContent = msg;
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function copyGeneratedPrompt() {
+  const p = document.getElementById('generated-prompt').value;
+  if (!p) return;
+  const doFallback = () => {
+    const ta = document.getElementById('generated-prompt');
+    ta.select(); try { document.execCommand('copy'); } catch(e) {}
+  };
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(p).catch(doFallback);
+  } else { doFallback(); }
+  toast('Full prompt copied to clipboard!');
+}
+
+function copyModalPrompt() {
+  const doFallback = () => {
+    const ta = document.createElement('textarea');
+    ta.value = currentModalPrompt; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.focus(); ta.select();
+    try { document.execCommand('copy'); } catch(e) {}
+    document.body.removeChild(ta);
+  };
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(currentModalPrompt).catch(doFallback);
+  } else { doFallback(); }
+  toast('Template prompt copied!');
+}
+
+function copySheetFormula() {
+  const val = document.getElementById('sheetsFormula').value;
+  if (!val) return;
+  const doFallback = () => {
+    const el = document.getElementById('sheetsFormula');
+    el.select(); try { document.execCommand('copy'); } catch(e) {}
+  };
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(val).catch(doFallback);
+  } else { doFallback(); }
+  toast('Sheets formula copied!');
+}
+
+document.getElementById('template-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+</script>
+</body>
+</html>
